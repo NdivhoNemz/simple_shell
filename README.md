@@ -82,7 +82,7 @@ Our shell has support for the following built-in commands:
 Clone the below repository and compile the files into an executable using the GCC compiler.
 
 ```
-https://github.com/StellahMbao/simple_shell.git
+https://github.com/NdivhoNemz/simple-shell.git
 ```
 
 ### Basic usage
