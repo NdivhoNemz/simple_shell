@@ -1,0 +1,19 @@
+By Temoso the above functions do the following on the getline.c code
+input_buf Function:
+Reads and buffers chained commands from the standard input.
+If the buffer is empty, it fills it by reading from the standard input.
+Removes trailing newlines, updates shell information, and checks for command chains.
+
+get_input Function:
+Gets a line of input from the standard input without the newline character.
+Manages command chaining by keeping track of the current position in the command chain buffer.
+
+read_buf Function:
+Reads data into a buffer from a file descriptor.
+
+_getline Function:
+Reads the next line of input from the standard input.
+Manages a static buffer and dynamically reallocates memory for the input.
+Handles newline characters and updates the length of the input.
+sigintHandler Function:
+Handles the SIGINT signal (Ctrl-C) by printing a new line and the shell prompt.
