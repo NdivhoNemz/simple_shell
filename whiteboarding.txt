@@ -1,0 +1,15 @@
+## HOW DOES A SHELL WORK:
+A shell in computer science is a user interface for access to an operating system's services. It can be either command-line based or have a graphical user interface.
+When you type a command into the shell, it interprets the command and calls the program that you want to execute. The shell communicates between the user and the operating system, acting as a command interpreter. It reads, parses, and executes the command entered by the user, and then waits for the next user command.
+For example, if you type "Is" in a Unix-based shell, the shell interprets this command and calls the program that lists the directory contents.
+The shell also handles scripts, allowing for more complex sets of commands to be invoked.
+
+## WHAT IS PID AND PPID:
+PID stands for Process IDentifier. It's a unique number that the system uses to keep track of each process that's currently running.
+PPID, on the other hand, stands for Parent Process IDentifier. This is the PID of the process that started the current process.
+For example, if you start a program from the command line, the shell process is the parent process of the program you started, so the program's PPID would be the PID of the shell.
+
+## HOW TO MANIPULATE THE ENVIRONMENT OF THE CURRENT PROCESS:
+In C, you can manipulate the environment of the current process using functions like getenv(), setenv (), and unsetenv(). getenv () is used to retrieve the value of an environment variable. setenv () is used to set or change the value of an environment variable.
+unsetenv () is used to remove an environment variable from the environment of the current process.
+Remember, changes made to the environment of the current process do not affect the parent process or other processes.
