@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ## HOW DOES A SHELL WORK:
 A shell in computer science is a user interface for access to an operating system's services. It can be either command-line based or have a graphical user interface.
 When you type a command into the shell, it interprets the command and calls the program that you want to execute. The shell communicates between the user and the operating system, acting as a command interpreter. It reads, parses, and executes the command entered by the user, and then waits for the next user command.
@@ -13,3 +14,24 @@ For example, if you start a program from the command line, the shell process is 
 In C, you can manipulate the environment of the current process using functions like getenv(), setenv (), and unsetenv(). getenv () is used to retrieve the value of an environment variable. setenv () is used to set or change the value of an environment variable.
 unsetenv () is used to remove an environment variable from the environment of the current process.
 Remember, changes made to the environment of the current process do not affect the parent process or other processes.
+=======
+By Temoso the above functions do the following on the getline.c code
+input_buf Function:
+Reads and buffers chained commands from the standard input.
+If the buffer is empty, it fills it by reading from the standard input.
+Removes trailing newlines, updates shell information, and checks for command chains.
+
+get_input Function:
+Gets a line of input from the standard input without the newline character.
+Manages command chaining by keeping track of the current position in the command chain buffer.
+
+read_buf Function:
+Reads data into a buffer from a file descriptor.
+
+_getline Function:
+Reads the next line of input from the standard input.
+Manages a static buffer and dynamically reallocates memory for the input.
+Handles newline characters and updates the length of the input.
+sigintHandler Function:
+Handles the SIGINT signal (Ctrl-C) by printing a new line and the shell prompt.
+>>>>>>> 32fdeb6d063e0c68be20f87a2a875c5ccea8c8ca
