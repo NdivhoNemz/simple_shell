@@ -1,11 +1,10 @@
 #include "shell.h"
 
 /**
- * execute_command - Forks a process and executes a command
- *  @args: Array of command-line arguments
+ * handle_arg - Forks a process and executes a command
+ * @args: Array of command-line arguments
  */
-
-void execute_command(char *args[])
+void handle_arg(char *args[])
 {
 	pid_t pid = fork();
 

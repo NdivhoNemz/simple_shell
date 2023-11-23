@@ -2,7 +2,7 @@
 
 /**
  * execute_command - Forks a process and executes a command
- * @args: Array of command-line arguments
+ *  @args: Array of command-line arguments
  */
 void execute_command(char *args[])
 {

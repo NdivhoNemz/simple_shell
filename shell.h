@@ -40,12 +40,13 @@ char *_getline(int fd);
 int handle_path(char **args);
 void execute_command(char *args[]);
 int exec_command(char *args[]);
+void handle_arg(char *args[]);
 
 /* handles setenv & unsetenv*/
 int _setenv(const char *var, const char *value);
 int _unsetenv(const char *var);
 
-/* Tokenisation handling */
+/* Tokenization handling */
 int count_tokens(const char *str, const char *delim);
 const char *skip_delim(const char *str, const char *delim);
 int get_token_length(const char *str, const char *delim);
