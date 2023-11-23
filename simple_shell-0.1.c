@@ -1,89 +1,187 @@
 #include "shell.h"
 
 /**
- * execute_command - Forks a process and executes a command
- *  @args: Array of command-line arguments
+ * _getenv - Function to get the value of an environment variable
+ * @name: The name of the environment variable
+ * Return: The value of the environment variable, or NULL if not found
  */
-void execute_command(char *args[])
+char *_getenv(const char *name)
 {
-	pid_t pid = fork();
+    extern char **environ;
+    int i, len;
 
-	if (pid == -1)
-	{
-		perror("fork");
-	}
-	else if (pid == 0)
-	{
-		/* Child process */
-		if (execve(args[0], args, NULL) == -1)
-		{
-			perror("execve");
-			_exit(EXIT_FAILURE);
-		}
-	}
-	else
-	{
-		/* Parent process */
-		waitpid(pid, NULL, 0);
-	}
+    if (!name || !environ)
+        return (NULL);
+
+    len = strlen(name);
+
+    for (i = 0; environ[i]; i++)
+    {
+        if (strncmp(environ[i], name, len) == 0 && environ[i][len] == '=')
+            return (environ[i] + len + 1);
+    }
+
+    return (NULL);
 }
 
 /**
- * main - Simple UNIX command line interpreter
+ * search_path - Function to search for the full path of a command
+ * @command: The command to search for
+ * Return: A struct stat_info containing the command and its full path,
+ *         or NULL if the command is not found
+ */
+stat_info *search_path(char *command)
+{
+    char *path, *token, *temp;
+    stat_info *info;
+    struct stat st;
+
+    path = _getenv("PATH");
+
+    if (!path)
+        return (NULL);
+
+    temp = strdup(path);
+
+    if (!temp)
+        return (NULL);
+
+    token = strtok(temp, ":");
+
+    while (token)
+    {
+        info = malloc(sizeof(stat_info));
+        if (!info)
+        {
+            free(temp);
+            return (NULL);
+        }
+
+        info->path = malloc(strlen(token) + strlen(command) + 2);
+        if (!info->path)
+        {
+            free(temp);
+            free(info);
+            return (NULL);
+        }
+
+        strcpy(info->path, token);
+        strcat(info->path, "/");
+        strcat(info->path, command);
+
+        if (stat(info->path, &st) == 0)
+        {
+            info->command = strdup(command);
+            free(temp);
+            return (info);
+        }
+
+        free(info->path);
+        free(info);
+        token = strtok(NULL, ":");
+    }
+
+    free(temp);
+    return (NULL);
+}
+
+/**
+ * execute_command - Function to execute a command
+ * @info: A struct stat_info containing the command and its full path
+ * Return: 0 on success, -1 on failure
+ */
+int execute_command(stat_info *info)
+{
+    pid_t pid;
+    int status;
+
+    if (!info)
+        return (-1);
+
+    pid = fork();
+
+    if (pid == -1)
+    {
+        perror("fork");
+        return (-1);
+    }
+
+    if (pid == 0)
+    {
+	char *args[2];
+        args[0] = info->command;
+        args[1] = NULL;
+
+        if (execve(info->path, args, NULL) == -1)
+        {
+            perror("execve");
+            _exit(EXIT_FAILURE);
+        }
+    }
+    else
+    {
+        do
+        {
+            if (waitpid(pid, &status, WUNTRACED) == -1)
+            {
+                perror("waitpid");
+                return (-1);
+            }
+        } while (!WIFEXITED(status) && !WIFSIGNALED(status));
+    }
+
+    return (0);
+}
+
+/**
+ * main - The main function for the shell
  * Return: Always 0
  */
 int main(void)
 {
-	char *input = NULL;
-	size_t input_size = 0;
+    char *buffer = NULL;
+    size_t bufsize = 0;
+    ssize_t characters;
+    stat_info *info;
 
-	while (1)
-	{
-		char **args;
+    while (1)
+    {
+        write(STDOUT_FILENO, "$ ", 2);
 
-		/* Display the shell prompt */
-		if (write(STDOUT_FILENO, "$ ", 2) == -1)
-		{
-			perror("write");
-			break;
-		}
+        characters = getline(&buffer, &bufsize, stdin);
 
-		if (getline(&input, &input_size, stdin) == -1)
-		{
-			perror("getline");
-			break; /* Exit on EOF (Ctrl+D) */
-		}
+        if (characters == -1)
+        {
+            if (feof(stdin))
+            {
+                write(STDOUT_FILENO, "\n", 1);
+                free(buffer);
+                exit(EXIT_SUCCESS);
+            }
+            perror("getline");
+            exit(EXIT_FAILURE);
+        }
 
-		/* Remove newline character */
-		input[strcspn(input, "\n")] = '\0';
+        if (characters > 1)
+        {
+            buffer[characters - 1] = '\0';
 
-		/* Tokenize the input into arguments */
-		args = _strtok(input, " ");
-		if (args == NULL)
-		{
-			fprintf(stderr, "Error: Failed to tokenize input\n");
-			break;
-		}
+            info = search_path(buffer);
 
-		/* Execute the command */
-		if (args[0] != NULL)
-		{
-			if (strcmp(args[0], "exit") == 0)
-			{
-				free(args); /* Free memory allocated for arguments */
-				break;      /* Exit the shell */
-			}
-			else
-			{
-				execute_command(args);
-			}
-		}
+            if (!info)
+            {
+                write(STDERR_FILENO, "Command not found\n", 18);
+            }
+            else
+            {
+                execute_command(info);
+                free(info->command);
+                free(info->path);
+                free(info);
+            }
+        }
+    }
 
-		free(args); /* Free memory allocated for arguments */
-	}
-
-	/* Free dynamically allocated memory */
-	free(input);
-
-	return 0;
+    return (0);
 }
+
